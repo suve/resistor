@@ -64,6 +64,44 @@ colour_to_band() {
 }
 
 
+colour_to_tolerance() {
+	# Special case
+	if [ "$1" = "none" ]; then
+		echo "20"
+		return
+	fi
+
+	NUMBER=`colour_to_number "$1"`
+
+	if [ "$NUMBER" -eq "-2" ]; then
+		TOLERANCE="10"
+	elif [ "$NUMBER" -eq "-1" ]; then
+		TOLERANCE="5"
+	elif [ "$NUMBER" -eq "1" ]; then
+		TOLERANCE="1"
+	elif [ "$NUMBER" -eq "2" ]; then
+		TOLERANCE="2"
+	elif [ "$NUMBER" -eq "3" ]; then
+		TOLERANCE="0.05"
+	elif [ "$NUMBER" -eq "4" ]; then
+		TOLERANCE="0.02"
+	elif [ "$NUMBER" -eq "5" ]; then
+		TOLERANCE="0.5"
+	elif [ "$NUMBER" -eq "6" ]; then
+		TOLERANCE="0.25"
+	elif [ "$NUMBER" -eq "7" ]; then
+		TOLERANCE="0.1"
+	elif [ "$NUMBER" -eq "8" ]; then
+		TOLERANCE="0.01"
+	else
+		echo >&2 "\"$1\" can only be a multiplier band colour, not a tolerance band colour"
+		exit 1
+	fi
+
+	echo "$TOLERANCE"
+}
+
+
 get_csi_for_band() {
 	if [ "$1" -eq "-3" ]; then
 		COLOUR_CODE="175m"
@@ -104,13 +142,27 @@ ascii_art() {
 	COL2=`get_csi_for_band "$2"`
 	COL3=`get_csi_for_band "$3"`
 
-	echo -n "  —[$COL1█$COL2█$COL3█$CSI_RESET]—  "
+	if [ -z "$4" ]; then
+		TBAND=""
+	elif [ "$4" = "none" ]; then
+		TBAND=" "
+	else
+		TBAND=`colour_to_number "$4"`
+		TBAND=`get_csi_for_band "$TBAND"`
+		TBAND="$TBAND█"
+	fi
+
+	echo -n "  —[$COL1█$COL2█$COL3█$TBAND$CSI_RESET]—  "
 }
 
 
 print_usage() {
 	cat << EOHELP
-Usage: resistor <1st band> <2nd band> <multiplier band>
+Usage: resistor <1st band> <2nd band> <multiplier band> [tolerance band]
+
+If the tolerance band is not specified, the tolerance is not calculated.
+If you want to calculate the tolerance for a resistor without a tolerance band,
+use "none" for the tolerance band colour.
 EOHELP
 	exit
 }
@@ -143,12 +195,23 @@ else
 	MULT=`expr "$MULT" - 8`
 fi
 
-ascii_art "$BND1" "$BND2" "$BND3"
+
+if [ "$#" -ge 4 ]; then
+	TBAND=`echo "$4" | tr '[:upper:]' '[:lower:]'`
+	TOLERANCE=`colour_to_tolerance "$TBAND"`
+	TOLERANCE=", $TOLERANCE% tolerance"
+else
+	TBAND=""
+	TOLERANCE=""
+fi
+
+
+ascii_art "$BND1" "$BND2" "$BND3" "$TBAND"
 if [ "$MULT" -eq 0 ]; then
-	echo "$BND1.$BND2" "$PREFIX" "Ohm"
+	echo "$BND1.$BND2" "$PREFIX" "Ohm$TOLERANCE"
 elif [ "$MULT" -eq 1 ]; then
-	echo "$BND1$BND2" "$PREFIX" "Ohm"
+	echo "$BND1$BND2" "$PREFIX" "Ohm$TOLERANCE"
 else
 	ZERO="0"
-	echo "$BND1$BND2$ZERO" "$PREFIX" "Ohm"
+	echo "$BND1$BND2$ZERO" "$PREFIX" "Ohm$TOLERANCE"
 fi
