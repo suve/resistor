@@ -1,0 +1,107 @@
+#!/bin/sh
+#
+# resistor - convert resistor colour code to Ohms
+# Copyright (C) 2019 Artur "suve" Iwicki
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License, version 3,
+# as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program (LICENCE.txt). If not, see <https://www.gnu.org/licenses/>.
+#
+
+colour_to_number() {
+	COLOUR=$1
+
+	if [ "$COLOUR" == "pink" ]; then
+		echo "-3"	
+	elif [ "$COLOUR" == "silver" ]; then
+		echo "-2"
+	elif [ "$COLOUR" == "gold" ]; then
+		echo "-1"
+	elif [ "$COLOUR" == "black" ]; then
+		echo "0"
+	elif [ "$COLOUR" == "brown" ]; then
+		echo "1"
+	elif [ "$COLOUR" == "red" ]; then
+		echo "2"
+	elif [ "$COLOUR" == "orange" ]; then
+		echo "3"
+	elif [ "$COLOUR" == "yellow" ]; then
+		echo "4"
+	elif [ "$COLOUR" == "green" ]; then
+		echo "5"
+	elif [ "$COLOUR" == "blue" ]; then
+		echo "6"
+	elif [ "$COLOUR" == "violet" ] || [ "$COLOUR" == "purple" ] || [ "$COLOUR" == "magenta" ]; then
+		echo "7"
+	elif [ "$COLOUR" == "grey" ] || [ "$COLOUR" == "gray" ]; then
+		echo "8"
+	elif [ "$COLOUR" == "white" ]; then
+		echo "9"
+	else
+		echo >&2 "Unknown colour code \"$COLOUR\""
+		exit 1
+	fi
+}
+
+
+colour_to_band() {
+	BAND=`colour_to_number "$1"`
+
+	if [ "$BAND" -lt 0 ]; then
+		echo >&2 "\"$1\" can only be a multiplier band colour, not a value band colour"
+		exit 1
+	fi
+
+	echo "$BAND"
+}
+
+
+print_usage() {
+	cat << EOHELP
+Usage: resistor <1st band> <2nd band> <multiplier band>
+EOHELP
+	exit
+}
+
+
+if [ "$#" -lt 3 ]; then
+	print_usage
+fi
+
+BND1=`colour_to_band "$1"`
+BND2=`colour_to_band "$2"`
+MULT=`colour_to_number "$3"`
+
+
+if [ "$MULT" -lt "0" ]; then
+	PREFIX="milli"
+	MULT=`expr "$MULT" + 3`
+elif [ "$MULT" -lt "3" ]; then
+	PREFIX=""
+elif [ "$MULT" -lt "6" ]; then
+	PREFIX="kilo"
+	MULT=`expr "$MULT" - 3`
+elif [ "$MULT" -lt "9" ]; then
+	PREFIX="mega"
+	MULT=`expr "$MULT" - 6`
+else
+	PREFIX="giga"
+	MULT=0
+fi
+
+if [ "$MULT" -eq 0 ]; then
+	echo "$BND1.$BND2" "$PREFIX" "Ohm"
+elif [ "$MULT" -eq 1 ]; then
+	echo "$BND1$BND2" "$PREFIX" "Ohm"
+else
+	BND2=`expr "$BND2" \* 10`
+	echo "$BND1$BND2" "$PREFIX" "Ohm"
+fi
