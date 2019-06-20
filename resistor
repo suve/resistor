@@ -149,7 +149,7 @@ ascii_art() {
 	else
 		TBAND=`colour_to_number "$4"`
 		TBAND=`get_csi_for_band "$TBAND"`
-		TBAND="$TBAND█"
+		TBAND="$TBAND▐"
 	fi
 
 	echo -n "  —[$COL1█$COL2█$COL3█$TBAND$CSI_RESET]—  "
