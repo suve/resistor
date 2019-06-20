@@ -17,7 +17,7 @@
 #
 
 colour_to_number() {
-	COLOUR=$1
+	COLOUR=`echo "$1" | tr '[:upper:]' '[:lower:]'`
 
 	if [ "$COLOUR" == "pink" ]; then
 		echo "-3"	
@@ -46,7 +46,7 @@ colour_to_number() {
 	elif [ "$COLOUR" == "white" ]; then
 		echo "9"
 	else
-		echo >&2 "Unknown colour code \"$COLOUR\""
+		echo >&2 "Unknown colour code \"$1\""
 		exit 1
 	fi
 }
