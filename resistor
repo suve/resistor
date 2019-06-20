@@ -19,31 +19,31 @@
 colour_to_number() {
 	COLOUR=`echo "$1" | tr '[:upper:]' '[:lower:]'`
 
-	if [ "$COLOUR" == "pink" ]; then
+	if [ "$COLOUR" = "pink" ]; then
 		echo "-3"	
-	elif [ "$COLOUR" == "silver" ]; then
+	elif [ "$COLOUR" = "silver" ]; then
 		echo "-2"
-	elif [ "$COLOUR" == "gold" ]; then
+	elif [ "$COLOUR" = "gold" ]; then
 		echo "-1"
-	elif [ "$COLOUR" == "black" ]; then
+	elif [ "$COLOUR" = "black" ]; then
 		echo "0"
-	elif [ "$COLOUR" == "brown" ]; then
+	elif [ "$COLOUR" = "brown" ]; then
 		echo "1"
-	elif [ "$COLOUR" == "red" ]; then
+	elif [ "$COLOUR" = "red" ]; then
 		echo "2"
-	elif [ "$COLOUR" == "orange" ]; then
+	elif [ "$COLOUR" = "orange" ]; then
 		echo "3"
-	elif [ "$COLOUR" == "yellow" ]; then
+	elif [ "$COLOUR" = "yellow" ]; then
 		echo "4"
-	elif [ "$COLOUR" == "green" ]; then
+	elif [ "$COLOUR" = "green" ]; then
 		echo "5"
-	elif [ "$COLOUR" == "blue" ]; then
+	elif [ "$COLOUR" = "blue" ]; then
 		echo "6"
-	elif [ "$COLOUR" == "violet" ] || [ "$COLOUR" == "purple" ] || [ "$COLOUR" == "magenta" ]; then
+	elif [ "$COLOUR" = "violet" ] || [ "$COLOUR" = "purple" ] || [ "$COLOUR" = "magenta" ]; then
 		echo "7"
-	elif [ "$COLOUR" == "grey" ] || [ "$COLOUR" == "gray" ]; then
+	elif [ "$COLOUR" = "grey" ] || [ "$COLOUR" = "gray" ]; then
 		echo "8"
-	elif [ "$COLOUR" == "white" ]; then
+	elif [ "$COLOUR" = "white" ]; then
 		echo "9"
 	else
 		echo >&2 "Unknown colour code \"$1\""
