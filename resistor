@@ -81,20 +81,21 @@ BND2=`colour_to_band "$2"`
 MULT=`colour_to_number "$3"`
 
 
-if [ "$MULT" -lt "0" ]; then
+if [ "$MULT" -lt "-1" ]; then
 	PREFIX="milli"
-	MULT=`expr "$MULT" + 3`
-elif [ "$MULT" -lt "3" ]; then
+	MULT=`expr "$MULT" + 4`
+elif [ "$MULT" -lt "2" ]; then
 	PREFIX=""
-elif [ "$MULT" -lt "6" ]; then
+	MULT=`expr "$MULT" + 1`
+elif [ "$MULT" -lt "5" ]; then
 	PREFIX="kilo"
-	MULT=`expr "$MULT" - 3`
-elif [ "$MULT" -lt "9" ]; then
+	MULT=`expr "$MULT" - 2`
+elif [ "$MULT" -lt "8" ]; then
 	PREFIX="mega"
-	MULT=`expr "$MULT" - 6`
+	MULT=`expr "$MULT" - 5`
 else
 	PREFIX="giga"
-	MULT=0
+	MULT=`expr "$MULT" - 8`
 fi
 
 if [ "$MULT" -eq 0 ]; then
@@ -102,6 +103,6 @@ if [ "$MULT" -eq 0 ]; then
 elif [ "$MULT" -eq 1 ]; then
 	echo "$BND1$BND2" "$PREFIX" "Ohm"
 else
-	BND2=`expr "$BND2" \* 10`
-	echo "$BND1$BND2" "$PREFIX" "Ohm"
+	ZERO="0"
+	echo "$BND1$BND2$ZERO" "$PREFIX" "Ohm"
 fi
