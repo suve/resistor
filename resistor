@@ -64,6 +64,50 @@ colour_to_band() {
 }
 
 
+get_csi_for_band() {
+	if [ "$1" -eq "-3" ]; then
+		COLOUR_CODE="175m"
+	elif [ "$1" -eq "-2" ]; then
+		COLOUR_CODE="249m"
+	elif [ "$1" -eq "-1" ]; then
+		COLOUR_CODE="186m"
+	elif [ "$1" -eq "0" ]; then
+		COLOUR_CODE="16m"
+	elif [ "$1" -eq "1" ]; then
+		COLOUR_CODE="58m"
+	elif [ "$1" -eq "2" ]; then
+		COLOUR_CODE="160m"
+	elif [ "$1" -eq "3" ]; then
+		COLOUR_CODE="166m"
+	elif [ "$1" -eq "4" ]; then
+		COLOUR_CODE="226m"
+	elif [ "$1" -eq "5" ]; then
+		COLOUR_CODE="34m"
+	elif [ "$1" -eq "6" ]; then
+		COLOUR_CODE="21m"
+	elif [ "$1" -eq "7" ]; then
+		COLOUR_CODE="128m"
+	elif [ "$1" -eq "8" ]; then
+		COLOUR_CODE="241m"
+	elif [ "$1" -eq "9" ]; then
+		COLOUR_CODE="231m"
+	fi
+
+	echo "X" | sed -e "s/X/\x1b[38;5;$COLOUR_CODE/"
+}
+
+
+ascii_art() {
+	CSI_RESET=`echo "X" | sed -e "s/X/\x1b[0m/"`
+
+	COL1=`get_csi_for_band "$1"`
+	COL2=`get_csi_for_band "$2"`
+	COL3=`get_csi_for_band "$3"`
+
+	echo -n "  —[$COL1█$COL2█$COL3█$CSI_RESET]—  "
+}
+
+
 print_usage() {
 	cat << EOHELP
 Usage: resistor <1st band> <2nd band> <multiplier band>
@@ -78,7 +122,8 @@ fi
 
 BND1=`colour_to_band "$1"`
 BND2=`colour_to_band "$2"`
-MULT=`colour_to_number "$3"`
+BND3=`colour_to_number "$3"`
+MULT=$BND3
 
 
 if [ "$MULT" -lt "-1" ]; then
@@ -98,6 +143,7 @@ else
 	MULT=`expr "$MULT" - 8`
 fi
 
+ascii_art "$BND1" "$BND2" "$BND3"
 if [ "$MULT" -eq 0 ]; then
 	echo "$BND1.$BND2" "$PREFIX" "Ohm"
 elif [ "$MULT" -eq 1 ]; then
